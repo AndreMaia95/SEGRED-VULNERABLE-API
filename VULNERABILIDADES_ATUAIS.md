@@ -2,6 +2,25 @@
 
 Data de levantamento: 2026-06-17
 
+## Cobertura do Enunciado
+
+Enunciado: testar autenticacao fraca, IDOR, rate limiting, JWT mal configurado, exposicao de dados e validacao de inputs.
+
+- Autenticacao fraca:
+  - Coberto em 1, 2, 4 e 8.
+- IDOR:
+  - Coberto em 5.
+- Rate limiting:
+  - Coberto em 9.
+- JWT mal configurado:
+  - Coberto em 3.
+- Exposicao de dados:
+  - Coberto em 6.
+- Validacao de inputs:
+  - Coberto em 10.
+
+Conclusao: todos os pontos pedidos no enunciado estao atualmente presentes e documentados nesta API vulneravel.
+
 ## 1) Passwords armazenadas em texto simples (sem hash)
 
 - Severidade: Critica
