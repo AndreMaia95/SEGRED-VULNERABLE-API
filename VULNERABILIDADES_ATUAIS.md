@@ -10,6 +10,8 @@ Enunciado: testar autenticacao fraca, IDOR, rate limiting, JWT mal configurado, 
   - Coberto em 1, 2, 4 e 8.
 - IDOR:
   - Coberto em 5.
+- Broken object level authorization no download de ficheiros:
+  - Coberto em 13.
 - Rate limiting:
   - Coberto em 9.
 - JWT mal configurado:
@@ -18,6 +20,8 @@ Enunciado: testar autenticacao fraca, IDOR, rate limiting, JWT mal configurado, 
   - Coberto em 6.
 - Validacao de inputs:
   - Coberto em 10.
+- SQL injection:
+  - Coberto em 14.
 
 Conclusao: todos os pontos pedidos no enunciado estao atualmente presentes e documentados nesta API vulneravel.
 
@@ -130,7 +134,7 @@ Conclusao: todos os pontos pedidos no enunciado estao atualmente presentes e doc
 ## 11) Tratamento de erros com mensagens potencialmente reveladoras
 
 - Severidade: Media
-- Evidencia: erros de base de dados e de negocio sao devolvidos diretamente com `error.message`.
+- Evidencia: o login devolve `error.message`, `stack`, `database_driver` e `environment` quando as credenciais sao invalidas.
 - Onde:
   - `src/infrastructure/web/controllers/UserController.js`
 - Impacto:
@@ -145,6 +149,27 @@ Conclusao: todos os pontos pedidos no enunciado estao atualmente presentes e doc
   - `package.json`
 - Impacto:
   - Maior exposicao a classes comuns de ataques web no ambiente real.
+
+## 13) Broken object level authorization no download de ficheiros
+
+- Severidade: Alta
+- Evidencia: a rota `/api/download` aceita `name` controlado pelo utilizador e usa `path.resolve('public/reports/' + file)` sem restricao de diretoria, permitindo path traversal como `../../database.sqlite`.
+- Onde:
+  - `src/infrastructure/web/routes/userRoutes.js`
+- Impacto:
+  - Download indevido de ficheiros da aplicacao, incluindo a base de dados e possivel codigo fonte.
+
+## 14) SQL injection na autenticacao
+
+- Severidade: Critica
+- Evidencia: `findByEmail` monta a query com interpolacao direta de `email`, permitindo payloads como `naoexiste@email.com' UNION SELECT 99, 'hacker', 'naoexiste@email.com', 'ataque123', 'admin' --`.
+- Onde:
+  - `src/infrastructure/database/userRepository.js`
+  - `src/core/use-cases/LoginUser.js`
+- Impacto:
+  - Bypass de autenticacao.
+  - Falsificacao de utilizador com `role` arbitrario.
+  - Retorno de token JWT forjado com `alg: none` e payload controlado pelo atacante.
 
 ---
 
