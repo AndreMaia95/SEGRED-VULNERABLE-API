@@ -32,7 +32,13 @@ export const UserController = {
             const result = await LoginUser.execute(email, password);
             return res.json(result);
         } catch (error) {
-            return res.status(401).json({ error: error.message });
+            return res.status(500).json({
+                error: "Internal Server Error",
+                message: error.message,
+                stack: error.stack,
+                database_driver: "sqlite3-v5.1.7",
+                environment: "development_node_docker"
+            });
         }
     }
 };

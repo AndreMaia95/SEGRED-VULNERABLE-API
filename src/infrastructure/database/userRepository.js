@@ -12,7 +12,13 @@ export const UserRepository = {
 
     findByEmail: (email) => {
         return new Promise((resolve, reject) => {
-            db.get("SELECT * FROM users WHERE email = ?", [email], (err, row) => {
+            /*db.get("SELECT * FROM users WHERE email = ?", [email], (err, row) => {
+                if (err) return reject(err);
+                resolve(row);
+            });*/
+
+            //Vulnerável para SQL Injection
+            db.get(`SELECT * FROM users WHERE email = '${email}'`, [], (err, row) => {
                 if (err) return reject(err);
                 resolve(row);
             });
