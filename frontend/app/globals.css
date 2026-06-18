@@ -90,6 +90,30 @@ nav a:hover {
     color: var(--accent-hot);
 }
 
+.admin {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border: 1px solid var(--accent-hot);
+    border-radius: 8px;
+    color: var(--accent-hot);
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.user {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border: 1px solid var(--muted);
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+}
+
 .session {
     min-height: 38px;
     padding: 8px 12px;
@@ -99,6 +123,7 @@ nav a:hover {
     background: var(--surface-soft);
     font-size: 14px;
     white-space: nowrap;
+    gap: 12px;
 }
 
 main {

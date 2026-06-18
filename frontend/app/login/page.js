@@ -38,11 +38,6 @@ export default function LoginPage() {
         router.push('/dashboard');
     }
 
-    function logout() {
-        clearSession();
-        setStatus('Sessao terminada.');
-    }
-
     return (
         <>
             <Header />
@@ -64,9 +59,6 @@ export default function LoginPage() {
                         </label>
                         <div className="actions">
                             <button type="submit">Entrar</button>
-                            <button className="secondary" type="button" onClick={logout}>
-                                Sair
-                            </button>
                         </div>
                     </form>
                     <p className="note">{status}</p>

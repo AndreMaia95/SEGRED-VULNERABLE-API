@@ -1,10 +1,3 @@
-export const defaultUser = {
-    id: 1,
-    username: 'joao_silva',
-    email: 'joao@email.com',
-    role: 'user'
-};
-
 export function decodeToken(token) {
     try {
         const payload = token.split('.')[1];

@@ -1,25 +1,33 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Header from '../components/Header';
-import { defaultUser, getSession } from '../lib/session';
+import { getSession } from '../lib/session';
 
 export default function DashboardPage() {
+    const router = useRouter();
     const [session, setSession] = useState({ token: '', user: null });
-    const [profile, setProfile] = useState(defaultUser);
+    const [profile, setProfile] = useState(null);
     const [status, setStatus] = useState('Use a sua conta para carregar os dados pessoais.');
 
     useEffect(() => {
         const storedSession = getSession();
+        if (!storedSession.token) {
+            router.push('/login');
+            return;
+        }
         setSession(storedSession);
-        setProfile(storedSession.user || defaultUser);
-    }, []);
+        setProfile(storedSession.user);
+    }, [router]);
 
     async function loadProfile() {
-        const id = session.user?.id || defaultUser.id;
+        const id = session.user?.id;
+        if (!id) return;
+
         const response = await fetch(`/api/users/${id}`, {
             headers: {
-                Authorization: session.token ? `Bearer ${session.token}` : 'Bearer frontend-session'
+                Authorization: session.token ? `Bearer ${session.token}` : ''
             }
         });
         const body = await response.json();
@@ -31,6 +39,17 @@ export default function DashboardPage() {
 
         setProfile(body);
         setStatus('Dados pessoais carregados pela area privada.');
+    }
+
+    if (!session.token || !profile) {
+        return (
+            <>
+                <Header />
+                <main className="pageShell">
+                    <p>A carregar dados de sessão...</p>
+                </main>
+            </>
+        );
     }
 
     return (
