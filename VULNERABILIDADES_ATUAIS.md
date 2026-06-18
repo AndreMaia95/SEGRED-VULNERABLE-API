@@ -1,6 +1,13 @@
 # Vulnerabilidades Atuais - SEGRED-VULNERABLE-API
 
-Data de levantamento: 2026-06-17
+Data de levantamento: 2026-06-18
+
+## Alteracoes desde a ultima atualizacao
+
+- Foi introduzida SQL Injection em `findByEmail` por interpolacao direta de `email`.
+- Foi adicionada rota de download vulneravel a path traversal (`/api/download?name=...`).
+- O endpoint de login passou a expor detalhes internos de erro (`stack`, `database_driver`, `environment`).
+- Foi adicionada interface frontend (Next.js), mas as vulnerabilidades listadas continuam concentradas na API backend.
 
 ## Cobertura do Enunciado
 
@@ -175,5 +182,5 @@ Conclusao: todos os pontos pedidos no enunciado estao atualmente presentes e doc
 
 ## Notas
 
-- A API usa queries parametrizadas no SQLite (`?`), reduzindo risco de SQL Injection direto nos pontos observados.
+- A API usa queries parametrizadas em varios pontos, mas existe SQL Injection ativa em `findByEmail` devido a query montada com interpolacao de string.
 - Este documento reflete o estado atual do codigo e foi preparado para contexto de laboratorio/ensino de seguranca.
