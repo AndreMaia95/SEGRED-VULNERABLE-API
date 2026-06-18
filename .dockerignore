@@ -1,2 +1,4 @@
 node_modules
 database.sqlite
+frontend/node_modules
+frontend/.next
