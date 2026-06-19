@@ -2,9 +2,10 @@ import { UserRepository } from '../../infrastructure/database/userRepository.js'
 
 export const LoginUser = {
     execute: async (email, password) => {
-        const user = await UserRepository.findByEmail(email);
-        
-        if (!user || user.passwordHash !== password) {
+        // Usa query com ambos os campos — vulnerável a SQL Injection
+        const user = await UserRepository.findByCredentials(email, password);
+
+        if (!user) {
             throw new Error("Credenciais inválidas");
         }
 

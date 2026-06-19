@@ -8,6 +8,10 @@ import { getSession } from "../lib/session";
 export default function DashboardPage() {
   const router = useRouter();
   const [session, setSession] = useState({ token: "", user: null });
+  const [apiProfile, setApiProfile] = useState(null);
+  const [status, setStatus] = useState(
+    "A mostrar dados do token. Pode carregar dados adicionais via API.",
+  );
 
   useEffect(() => {
     const storedSession = getSession();
@@ -18,7 +22,45 @@ export default function DashboardPage() {
     setSession(storedSession);
   }, [router]);
 
-  const profile = session.user;
+  const tokenProfile = session.user;
+  const profile = apiProfile
+    ? { ...tokenProfile, ...apiProfile }
+    : tokenProfile;
+
+  async function loadProfileFromApi() {
+    const id = tokenProfile?.id;
+    if (!id) {
+      setStatus("Token sem identificador de utilizador.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/users/${id}`, {
+        headers: {
+          Authorization: session.token ? `Bearer ${session.token}` : "",
+        },
+      });
+
+      const raw = await response.text();
+      let body = {};
+
+      try {
+        body = raw ? JSON.parse(raw) : {};
+      } catch {
+        body = { error: "Resposta invalida da API de perfil." };
+      }
+
+      if (!response.ok) {
+        setStatus(body.error || "Nao foi possivel carregar dados via API.");
+        return;
+      }
+
+      setApiProfile(body);
+      setStatus("Dados da API carregados e combinados com o token.");
+    } catch {
+      setStatus("Falha de ligacao ao endpoint de perfil.");
+    }
+  }
 
   if (!session.token || !profile) {
     return (
@@ -39,8 +81,8 @@ export default function DashboardPage() {
           <p className="eyebrow">Area privada</p>
           <h1>Dashboard</h1>
           <p>
-            Os dados apresentados nesta area sao extraidos diretamente do token
-            da sessao, sem consulta adicional ao endpoint de perfil.
+            Esta area mostra dados do token e permite juntar dados adicionais
+            vindos da API de perfil.
           </p>
         </section>
 
@@ -51,12 +93,18 @@ export default function DashboardPage() {
                 <p className="eyebrow">Conta</p>
                 <h2>Os meus dados</h2>
               </div>
-              <span className="badge">Dados a partir do token</span>
+              <span className="badge">
+                {apiProfile ? "Token + API" : "Dados a partir do token"}
+              </span>
             </div>
             <p className="bodyText">
-              O frontend mostra apenas os campos existentes no payload do JWT
-              atual.
+              O frontend usa o payload JWT como base e, opcionalmente, combina
+              os dados retornados por `/api/users/:id`.
             </p>
+            <button type="button" onClick={loadProfileFromApi}>
+              Carregar dados via API
+            </button>
+            <p className="note">{status}</p>
           </article>
 
           <article className="panel profileCard">
